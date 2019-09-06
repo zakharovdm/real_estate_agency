@@ -32,6 +32,7 @@ class Flat(models.Model):
     active = models.BooleanField("Активно-ли объявление", db_index=True)
     construction_year = models.IntegerField("Год постройки здания",
                                             null=True, blank=True, db_index=True)
+    liked_it = models.ManyToManyField(User, blank=True, verbose_name="Кто лайкнул:")
 
     def __str__(self):
         return f"{self.town}, {self.address} ({self.price}р.)"
