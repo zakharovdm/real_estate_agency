@@ -8,10 +8,18 @@ class Migration(migrations.Migration):
 
     def filling_owner_phone_pure(apps, schema_editor):
         Flat = apps.get_model('property', 'Flat')
+        phone = Flat.objects.all()
         for phone in Flat.objects.all():
             parse_phone_number = phonenumbers.parse(phone.owners_phonenumber, "RU")
-            phone.owner_phone_pure = phonenumbers.format_number(parse_phone_number,
+            if phonenumbers.is_valid_number(parse_phone_number):
+                phone.owner_phone_pure = phonenumbers.format_number(parse_phone_number,
                                                                 phonenumbers.PhoneNumberFormat.E164)
+                phone.save()
+
+    def move_backward(apps, schema_editor):
+        Flat = apps.get_model('property', 'Flat')
+        for phone in Flat.objects.all():
+            phone.owner_phone_pure = ""
             phone.save()
 
     dependencies = [
@@ -19,5 +27,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(filling_owner_phone_pure)
+        migrations.RunPython(filling_owner_phone_pure, move_backward)
     ]
